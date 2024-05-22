@@ -61,11 +61,11 @@ class CajeroAutomatico(tk.Tk):
             entrada_pin.pack_forget()
 
             metodo = self.metodo_inicio_var.get()
+            
             if metodo == 1:  # Tarjeta con chip
                 etiqueta_pin.config(text="Pin: ")
                 etiqueta_pin.pack(side='left', padx=10)
-                entrada_pin.pack(side='left', padx=10)
-                                
+                entrada_pin.pack(side='left', padx=10)             
             elif metodo == 2:  # Celular/Pin
                 etiqueta_celular.config(text="Celular:")
                 etiqueta_pin.config(text="Pin")
@@ -87,6 +87,7 @@ class CajeroAutomatico(tk.Tk):
         
         def confirmar(): #validacion del campo de pin
             pines_lista = []
+            
             def buscar_pin_tarjeta(self):
                 # Conectar a la base de datos
                 conexion = sqlite3.connect("proyecto.db")
@@ -104,14 +105,19 @@ class CajeroAutomatico(tk.Tk):
 
                 # Cerrar la conexión a la base de datos
                 conexion.close()
-                
-            buscar_pin_tarjeta(self)
+            
+            if self.metodo_inicio_var.get() == 1:
+                buscar_pin_tarjeta(self)
+            else:
+                # mostrar mensaje de error
+                mensaje_error.config(text="Por favor ingrese un metodo de autentificacion")
+                return
             
             pin = entrada_pin.get().strip()
             mensaje_error.config(text="")  # Limpiar mensaje de error
             if not pin:
                 # Si el campo de texto está vacío
-                mensaje_error.config(text="Por favor ingrese un pin.")
+                mensaje_error.config(text="Por favor ingrese un pin")
                 return
             try:
                 conexion = sqlite3.connect("proyecto.db")
@@ -180,13 +186,15 @@ class CajeroAutomatico(tk.Tk):
         campos_frame.pack(pady=20)
 
         etiqueta_celular = tk.Label(campos_frame, text="Celular:", bg="#14327D", fg="white", font=("Segoe UI Semibold", 16))
-        entrada_celular = tk.Entry(campos_frame, font=("Segoe UI Semibold", 16))
+        entrada_celular = tk.Entry(campos_frame, show="*",font=("Segoe UI Semibold", 16))
 
         etiqueta_pin = tk.Label(campos_frame, text="Pin:", bg="#14327D", fg="white", font=("Segoe UI Semibold", 16))
-        entrada_pin = tk.Entry(campos_frame, font=("Segoe UI Semibold", 16))
+        entrada_pin = tk.Entry(campos_frame, show="*", font=("Segoe UI Semibold", 16))
 
         # Crear botón para ingresar
         boton_ingresar = tk.Button(contenido_frame, text="Ingresar", bg="white", fg="#14327D", font=("Segoe UI Semibold", 20), command=confirmar)
+        
+        
         boton_ingresar.pack(pady=10)
 
         # Etiqueta para mostrar mensaje de error
@@ -195,12 +203,6 @@ class CajeroAutomatico(tk.Tk):
 
         self.cambiar_pantalla(frame_inicio)
         
-        
-
-    
-
-    
-    
     def pantalla_retiro(self):
         self.valor_btc = 270485639.70  # variable para poner lo que vale 1 BTC
         self.saldo_actual = 10000000  #saldo actual
